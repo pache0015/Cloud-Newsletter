@@ -6,9 +6,15 @@ class Subscriptor{
         this._subscribers = [];
     }    
 
+    get subscribers() { return this._subscribers; }
+
     is_subscribe(anArtistID, anEmail){
         return this._subscribers.some(subs => 
              anArtistID === subs.artistId && anEmail === subs.email);
+    }
+
+    subscribe_mails(anID){
+        return this._subscribers.filter(subs => subs.artistId === anID).map(subs => subs.email);
     }
 
     subscribe(anArtistID, anEmail) {
@@ -20,10 +26,9 @@ class Subscriptor{
     }
 
     unSubscribe(anArtistID, anEmail){
-        this._subscribers = this._subscribers.filter(sub => (
-            !(sub.artistId === anArtistID && sub.email === anEmail.email)
-        ))
-        return this._subscribers
+        this._subscribers = this._subscribers.filter(sub => 
+            !sub.artistId === anArtistID && sub.email === anEmail.email)
+        return this._subscribers;
     }
 
     save(filename) {
