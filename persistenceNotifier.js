@@ -1,13 +1,12 @@
-const fs = require('fs'); // necesitado para guardar/cargar lo relacionado a las notificaciones
-const notifyMod = require('./subscriber'); // importamos el modulo de subscribers
+const fs = require('fs');
+const Subscriptor = require('./subscriptor.js'); 
 
-// Retorna una instancia de UNQfy. Si existe filename, recupera la instancia desde el archivo.
 function getNotify(filename = 'data.json') {
-  let notify = new notifyMod.Subscribers();
+  let unqfy = new Subscriptor();
   if (fs.existsSync(filename)) {
-    notify = notifyMod.Subscribers.load(filename);
+      unqfy = Subscriptor.load(filename);
   }
-  return notify;
+  return unqfy;;
 }
 
 function saveNotify(notify, filename = 'data.json') {

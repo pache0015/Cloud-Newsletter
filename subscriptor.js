@@ -1,29 +1,29 @@
 const picklify = require('picklify'); 
 const fs = require('fs'); 
-const { runInThisContext } = require('vm');
 
 class Subscriptor{
     constructor(){
         this._subscribers = [];
     }    
 
-    subscribe(artistID, anEmail) {
-        let subscriber = {  artistID: artistID,
-                            email: anEmail };
-        if (!this.contains(artistID, anEmail)){
+    is_subscribe(anArtistID, anEmail){
+        return this._subscribers.some(subs => 
+             anArtistID === subs.artistId && anEmail === subs.email);
+    }
+
+    subscribe(anArtistID, anEmail) {
+        const subscriber = {artistId: anArtistID, email: anEmail};
+        if (! this.is_subscribe(anArtistID, anEmail)){
             this._subscribers.push(subscriber);
         }
+        return subscriber;
     }
 
     unSubscribe(anArtistID, anEmail){
         this._subscribers = this._subscribers.filter(sub => (
-            !(sub.artistID === anArtistID && sub.email === anEmail.email)
+            !(sub.artistId === anArtistID && sub.email === anEmail.email)
         ))
         return this._subscribers
-    }
-
-    contains(anArtistID, anEmail){
-        return this._subscribers.some(sub => sub.email  == anEmail && subs.artistID == anArtistID)
     }
 
     save(filename) {
@@ -31,15 +31,13 @@ class Subscriptor{
         const serializedData = picklify.picklify(this);
         fs.writeFileSync(filename, JSON.stringify(serializedData, null, 2), { encoding: 'utf-8' });
         console.log("Write successful");
-      }
-
+    }
+    
     static load(filename) {
         const serializedData = fs.readFileSync(filename, { encoding: 'utf-8' });
-        const classes = [Subscriber, Subscribers];
+        const classes = [Subscriptor];
         return picklify.unpicklify(JSON.parse(serializedData), classes);
-      }
+    }
 }
 
-module.exports = {
-    Subscriptor
-};
+module.exports = Subscriptor;

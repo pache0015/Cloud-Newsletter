@@ -10,6 +10,4 @@ class UNQfyConnector{
     }
 }
 
-module.exports = {
-    UnqfyConnector
-  };
+module.exports = UNQfyConnector;

@@ -14,7 +14,8 @@
     "googleapis": "^39.2.0",
     "picklify": "^1.0.1",
     "request": "^2.88.2",
-    "request-promise": "^4.2.5"
+    "request-promise": "^4.2.5",
+    "rp": "^0.2.0"
   },
   "devDependencies": {},
   "repository": {
