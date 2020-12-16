@@ -11,7 +11,6 @@ const { NoFindArtistException,
     NoExistArtistException,
     BadRequestException, 
     NotificationFailureException } = require('./exceptions.js');
-    const port = 8083;  
 app.use((req, res, next) => {
 bodyParser.json()(req, res, err => {
         if (err) {
@@ -27,6 +26,16 @@ bodyParser.json()(req, res, err => {
         console.log("Server running");
  });
     
+=======
+
+notifications.route('/activated')
+    .get((req, res) => {
+        console.log("ACTIVATED");
+        res.status(200);
+        res.json("OK");
+    });
+
+>>>>>>> c2100be90528a2cf0256f76c0516ccdfff592a8b
 notifications.route('/subscribe')
 .post((req, res,next) => {
     const data = req.body;
@@ -122,6 +131,24 @@ notifications.route('/notify')
         next(new NoFindArtistException()))
     );
 })
+
+const port = 8085;
+
+app.use((req, res, next) => {
+    bodyParser.json()(req, res, err => {
+        if (err) {
+            errorHandler(new BadRequestException(), req, res);
+            return;
+        }
+        next();
+    });
+});
+app.use('/api', notifications);
+app.use(errorHandler);
+const server = app.listen(port, () => {
+    console.log("Server running");
+});
+
 
 function errorHandler(err, req, res, next) {
     console.log(err)
