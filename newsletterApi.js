@@ -12,6 +12,13 @@ const { NoFindArtistException,
     BadRequestException, 
     NotificationFailureException } = require('./exceptions.js');
 
+notifications.route('/activated')
+    .get((req, res) => {
+        console.log("ACTIVATED");
+        res.status(200);
+        res.json("OK");
+    });
+
 notifications.route('/subscribe')
 .post((req, res,next) => {
     const data = req.body;
@@ -110,7 +117,7 @@ notifications.route('/notify')
     );
 })
 
-const port = 8083;  
+const port = 8085;
 
 app.use((req, res, next) => {
     bodyParser.json()(req, res, err => {
