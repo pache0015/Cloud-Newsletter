@@ -26,7 +26,6 @@ bodyParser.json()(req, res, err => {
         console.log("Server running");
  });
     
-=======
 
 notifications.route('/activated')
     .get((req, res) => {
@@ -35,7 +34,6 @@ notifications.route('/activated')
         res.json("OK");
     });
 
->>>>>>> c2100be90528a2cf0256f76c0516ccdfff592a8b
 notifications.route('/subscribe')
 .post((req, res,next) => {
     const data = req.body;
