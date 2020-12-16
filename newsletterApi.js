@@ -11,7 +11,22 @@ const { NoFindArtistException,
     NoExistArtistException,
     BadRequestException, 
     NotificationFailureException } = require('./exceptions.js');
-
+    const port = 8083;  
+app.use((req, res, next) => {
+bodyParser.json()(req, res, err => {
+        if (err) {
+            errorHandler(new BadRequestException(), req, res);
+            return;
+        }
+        next();
+        });
+    });
+ app.use('/api', notifications);
+ app.use(errorHandler);
+ const server = app.listen(port, () => {
+        console.log("Server running");
+ });
+    
 notifications.route('/subscribe')
 .post((req, res,next) => {
     const data = req.body;
@@ -64,8 +79,9 @@ notifications.route('/unsubscribe')
     }
     unqfyConnector.existArtist(data.artistId)
     .then(result => {
-        notifier = getNotify();
+        const notifier = getNotify();
         notifier.unSubscribe(data.artistId, data.email);
+        console.log(notifier.subscribers)
         saveNotify(notifier);
         res.status(200);
         res.send({
@@ -80,66 +96,48 @@ notifications.route('/unsubscribe')
 notifications.route('/notify')
 .post((req, res, next) => {
     const data = req.body;
-    if (data.artistId === undefined || data.subject === undefined || data.message === undefined){
-        errorHandler(new BadRequestException());
+    if (data.artistId === undefined 
+        || data.subject === undefined 
+        || data.message === undefined){
+        next(new BadRequestException());
         return;
     }
     unqfyConnector.existArtist(data.artistId)
     .then(result => {
-        const emails = notifier.subscribers.map(subs => { 
-            if (subs.artistId === data.artistId) {
-                return subs.email;
-            }
-        })
-        const filteredEmails = emails.filter(email=> email != undefined)
+        const notifier = getNotify();
+        emails = notifier.subscribe_mails(data.artistId);
         try {        
-            filteredEmails.forEach(email => {
-                if (!(email === undefined)){
-                sendMail.sendMessage(email, data.subject, data.message)};});
-            res.status(200);
-            res.send({
-                Body: ""
+            emails.forEach(email => {
+                sendMail.sendMessage(email, data.subject, data.message)})
+        res.status(200);
+        res.send({
+            Body: ""
             })
         } catch(err){
+            console.log(err);
             next(new NotificationFailureException());
         }
     })
     .catch(err => (
-        next(
-            new new NoFindArtistException()))
+        next(new NoFindArtistException()))
     );
 })
 
-const port = 8083;  
-
-app.use((req, res, next) => {
-    bodyParser.json()(req, res, err => {
-        if (err) {
-            errorHandler(new BadRequestException(), req, res);
-            return;
-        }
-        next();
-    });
-});
-app.use('/api', notifications);
-app.use(errorHandler);
-const server = app.listen(port, () => {
-    console.log("Server running");
-});
-
-
 function errorHandler(err, req, res, next) {
-
+    console.log(err)
     if (err.type === 'entity.parse.failed'){
+        console.log(err)
         res.status(err.status);
         res.json({status: err.status, errorCode: 'INVALID_JSON'});
     }else if (
         err instanceof NoFindArtistException){
+            console.log(err)
                 res.status(404);
                 res.json({
                     status: 404,
                     errorCode: "RESOURCE_NOT_FOUND"});
     } else {
+        console.log(err)
         res.status(500);
         res.json({status: 500, errorCode: 'INTERNAL_SERVER_ERROR'});
     }

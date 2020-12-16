@@ -17,6 +17,7 @@ class GMailAPIClient {
     }
 
     send_mail(subject, bodyLines, receiver, sender) {
+        console.log("send")
         return this._client.users.messages.send(
             {
               userId: 'me',
